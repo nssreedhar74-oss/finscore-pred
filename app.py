@@ -4,10 +4,11 @@ import numpy as np
 import pickle
 
 # =========================
-# LOAD MODEL & SCALER
+# LOAD FILES
 # =========================
 model = pickle.load(open('financial_health_model.pkl', 'rb'))
 scaler = pickle.load(open('scaler.pkl', 'rb'))
+columns = pickle.load(open('columns.pkl', 'rb'))  # ⭐ KEY FIX
 
 st.title("💰 Financial Health Score Predictor")
 st.write("Enter customer details:")
@@ -29,52 +30,25 @@ income_per_dep = income / (dependents + 1)
 late_payment_score = late_payments
 
 # =========================
-# CREATE INPUT DATAFRAME
-# (MATCH TRAINING EXACTLY)
+# CREATE EMPTY INPUT WITH CORRECT STRUCTURE
 # =========================
-input_data = pd.DataFrame({
-    'RevolvingUtilizationOfUnsecuredLines': [0],
-    'age': [age],
-    'NumberOfTime30-59DaysPastDueNotWorse': [0],
-    'DebtRatio': [debt_ratio],
-    'MonthlyIncome': [income],
-    'NumberOfOpenCreditLinesAndLoans': [credit_lines],
-    'NumberOfTimes90DaysLate': [late_payments],
-    'NumberRealEstateLoansOrLines': [0],
-    'NumberOfTime60-89DaysPastDueNotWorse': [0],
-    'NumberOfDependents': [dependents],
-    'Income_per_Dependent': [income_per_dep],
-    'Late_Payment_Score': [late_payment_score]
-})
+input_data = pd.DataFrame(np.zeros((1, len(columns))), columns=columns)
+
+# Fill only relevant fields
+input_data['age'] = age
+input_data['MonthlyIncome'] = income
+input_data['DebtRatio'] = debt_ratio
+input_data['NumberOfOpenCreditLinesAndLoans'] = credit_lines
+input_data['NumberOfTimes90DaysLate'] = late_payments
+input_data['NumberOfDependents'] = dependents
+input_data['Income_per_Dependent'] = income_per_dep
+input_data['Late_Payment_Score'] = late_payment_score
 
 # =========================
-# FORCE COLUMN ORDER (CRITICAL FIX)
-# =========================
-expected_columns = [
-    'RevolvingUtilizationOfUnsecuredLines',
-    'age',
-    'NumberOfTime30-59DaysPastDueNotWorse',
-    'DebtRatio',
-    'MonthlyIncome',
-    'NumberOfOpenCreditLinesAndLoans',
-    'NumberOfTimes90DaysLate',
-    'NumberRealEstateLoansOrLines',
-    'NumberOfTime60-89DaysPastDueNotWorse',
-    'NumberOfDependents',
-    'Income_per_Dependent',
-    'Late_Payment_Score'
-]
-
-input_data = input_data[expected_columns]
-
-# =========================
-# SCALE
+# SCALE + PREDICT
 # =========================
 input_scaled = scaler.transform(input_data)
 
-# =========================
-# PREDICT
-# =========================
 if st.button("Predict"):
     prediction = model.predict(input_scaled)[0]
 
