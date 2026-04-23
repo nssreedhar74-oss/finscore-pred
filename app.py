@@ -16,13 +16,21 @@ st.write("Enter customer details:")
 # =========================
 # INPUTS
 # =========================
-age = st.number_input("Age", 18, 100, value=30)
-income = st.number_input("Monthly Income", 0, 200000, value=15000)
-debt_ratio = st.number_input("Debt Ratio", 0.0, 5.0, value=1.0)
-credit_lines = st.number_input("Credit Lines", 0, 50, value=5)
-late_payments = st.number_input("Late Payments (90 days)", 0, 50, value=0)
-dependents = st.number_input("Dependents", 0, 10, value=2)
+# LOAD MEAN VALUES
+mean_values = pickle.load(open('mean_values.pkl', 'rb'))
 
+# CREATE INPUT WITH REALISTIC BASE
+input_data = pd.DataFrame([mean_values])
+
+# UPDATE USER INPUTS
+input_data['age'] = age
+input_data['MonthlyIncome'] = income
+input_data['DebtRatio'] = debt_ratio
+input_data['NumberOfOpenCreditLinesAndLoans'] = credit_lines
+input_data['NumberOfTimes90DaysLate'] = late_payments
+input_data['NumberOfDependents'] = dependents
+input_data['Income_per_Dependent'] = income_per_dep
+input_data['Late_Payment_Score'] = late_payment_score
 # =========================
 # FEATURE ENGINEERING
 # =========================
