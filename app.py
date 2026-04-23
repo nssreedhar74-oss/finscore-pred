@@ -51,7 +51,4 @@ if st.button("Predict"):
         st.success("🟢 Excellent Financial Health")
     elif prediction > 50:
         st.warning("🟡 Moderate Financial Health")
-st.write("Model Loaded Successfully")
-st.write(model)
-    else:
-        st.error("🔴 Poor Financial Health")
+
