@@ -1,5 +1,4 @@
-project/
-│
-├── app.py
-├── financial_health_model.pkl
-├── scaler.pkl
+streamlit
+pandas
+numpy
+scikit-learn
