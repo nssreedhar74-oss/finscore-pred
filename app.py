@@ -7,7 +7,6 @@ import pickle
 # LOAD FILES
 # =========================
 model = pickle.load(open('financial_health_model.pkl', 'rb'))
-scaler = pickle.load(open('scaler.pkl', 'rb'))
 columns = pickle.load(open('columns.pkl', 'rb'))
 mean_values = pickle.load(open('mean_values.pkl', 'rb'))
 
@@ -34,16 +33,14 @@ income_per_dep = income / (dependents + 1)
 late_payment_score = late_payments
 
 # =========================
-# CREATE INPUT DATAFRAME (BASE = MEAN VALUES)
+# CREATE INPUT DATAFRAME
 # =========================
 input_data = pd.DataFrame([mean_values])
 
 # Ensure correct column order
 input_data = input_data[columns]
 
-# =========================
-# UPDATE WITH USER INPUT
-# =========================
+# Update with user input
 input_data['age'] = age
 input_data['MonthlyIncome'] = income
 input_data['DebtRatio'] = debt_ratio
@@ -54,19 +51,13 @@ input_data['Income_per_Dependent'] = income_per_dep
 input_data['Late_Payment_Score'] = late_payment_score
 
 # =========================
-# SCALE INPUT
-# =========================
-input_scaled = scaler.transform(input_data)
-
-# =========================
-# PREDICT
+# PREDICTION
 # =========================
 if st.button("Predict"):
-    prediction = model.predict(input_scaled)[0]
+    prediction = model.predict(input_data)[0]
 
     st.success(f"💡 Financial Health Score: {round(prediction, 2)} / 100")
 
-    # Interpretation
     if prediction > 75:
         st.success("🟢 Excellent Financial Health")
     elif prediction > 50:
