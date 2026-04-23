@@ -1,14 +1,12 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import pickle
 
 # =========================
-# LOAD FILES
+# LOAD MODEL
 # =========================
 model = pickle.load(open('financial_health_model.pkl', 'rb'))
 columns = pickle.load(open('columns.pkl', 'rb'))
-mean_values = pickle.load(open('mean_values.pkl', 'rb'))
 
 # =========================
 # UI
@@ -27,28 +25,19 @@ late_payments = st.number_input("Late Payments (90 days)", 0, 50, value=0)
 dependents = st.number_input("Dependents", 0, 10, value=2)
 
 # =========================
-# FEATURE ENGINEERING
+# CREATE INPUT DATA
 # =========================
-income_per_dep = income / (dependents + 1)
-late_payment_score = late_payments
+input_data = pd.DataFrame({
+    'age': [age],
+    'MonthlyIncome': [income],
+    'DebtRatio': [debt_ratio],
+    'NumberOfOpenCreditLinesAndLoans': [credit_lines],
+    'NumberOfTimes90DaysLate': [late_payments],
+    'NumberOfDependents': [dependents]
+})
 
-# =========================
-# CREATE INPUT DATAFRAME
-# =========================
-input_data = pd.DataFrame([mean_values])
-
-# Ensure correct column order
+# Ensure correct order
 input_data = input_data[columns]
-
-# Update with user input
-input_data['age'] = age
-input_data['MonthlyIncome'] = income
-input_data['DebtRatio'] = debt_ratio
-input_data['NumberOfOpenCreditLinesAndLoans'] = credit_lines
-input_data['NumberOfTimes90DaysLate'] = late_payments
-input_data['NumberOfDependents'] = dependents
-input_data['Income_per_Dependent'] = income_per_dep
-input_data['Late_Payment_Score'] = late_payment_score
 
 # =========================
 # PREDICTION
